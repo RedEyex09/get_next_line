@@ -1,16 +1,16 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   get_next_line.c                                    :+:      :+:    :+:   */
+/*   get_next_line_bonus.c                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: hel-magh <hel-magh@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/12/09 09:43:13 by hel-magh          #+#    #+#             */
-/*   Updated: 2023/12/12 16:38:18 by hel-magh         ###   ########.fr       */
+/*   Created: 2023/12/12 16:39:57 by hel-magh          #+#    #+#             */
+/*   Updated: 2023/12/12 16:45:08 by hel-magh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "get_next_line.h"
+#include "get_next_line_bonus.h"
 
 static char	*ft_line(int fd, char *buffer, char *line_mode)
 {
@@ -62,26 +62,26 @@ static char	*line_mover(char **line)
 
 char	*get_next_line(int fd)
 {
-	static char	*complete_line;
+	static char	*complete_line[OPEN_MAX];
 	char		*line;
 	char		*buffer;
 
 	if (fd < 0 || BUFFER_SIZE <= 0 || read(fd, 0, 0) < 0
 		|| BUFFER_SIZE > INT_MAX)
 	{
-		free(complete_line);
-		complete_line = NULL;
+		free(complete_line[fd]);
+		complete_line[fd] = NULL;
 		return (NULL);
 	}
 	buffer = malloc(((size_t)BUFFER_SIZE + 1) * sizeof(char));
 	if (!buffer)
-		return (free(complete_line), complete_line = NULL, NULL);
+		return (free(complete_line[fd]), complete_line[fd] = NULL, NULL);
 	buffer[0] = '\0';
-	line = ft_line(fd, buffer, complete_line);
+	line = ft_line(fd, buffer, complete_line[fd]);
 	free(buffer);
 	buffer = NULL;
 	if (!line)
-		return (complete_line = NULL, NULL);
-	complete_line = line_mover(&line);
+		return (complete_line[fd] = NULL, NULL);
+	complete_line[fd] = line_mover(&line);
 	return (line);
 }
